@@ -1,0 +1,64 @@
+/* #region NavBar */
+
+.nav-container {
+  height: 60px;
+}
+
+nav {
+  display: flex;
+  padding: 0 3rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav a {
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+nav ul {
+  list-style: none;
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-left div,
+.nav-left ul {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+nav img {
+  height: 20px;
+}
+
+.nav-divider {
+  content: "";
+  width: 1px;
+  height: 20px;
+  background-color: black;
+}
+
+/* #endregion */
+
+/* #region Home */
+
+.home {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-container {
+  align-self: center;
+  margin-top: 12vh;
+  display: flex;
+  gap: 5rem;
+  max-width: 1000px;
+}
+
+/* #endregion */

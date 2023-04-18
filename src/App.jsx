@@ -1,3 +1,5 @@
+import "normalize.css";
+import "./index.css";
 import { createContext } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import guestUserData from "./guestUserData";
