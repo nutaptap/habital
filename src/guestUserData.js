@@ -67,3 +67,5 @@ const guestUserData = {
     ],
   },
 };
+
+export default guestUserData;

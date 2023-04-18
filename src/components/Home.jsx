@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../App";
 
 function Home() {
+  const user = useContext(UserContext);
+
   return (
     <>
       <nav>
@@ -23,6 +27,7 @@ function Home() {
         </ul>
       </nav>
       <h1>Home</h1>
+      <p>{user.user.name}</p>
     </>
   );
 }
