@@ -55,10 +55,135 @@ nav img {
 
 .home-container {
   align-self: center;
-  margin-top: 12vh;
+  margin-top: 10vh;
   display: flex;
   gap: 5rem;
   max-width: 1000px;
+}
+
+/* #endregion */
+
+/* #region Habits */
+
+.habits {
+  display: flex;
+  justify-content: center;
+}
+
+.habits-container {
+  margin-top: 12vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 3rem;
+  max-width: 750px;
+}
+
+.habits figure {
+  margin: 0;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 0.3rem;
+}
+
+.habits figure:hover {
+  background-color: rgb(248, 248, 248);
+}
+
+.habits figure img {
+  height: 170px;
+}
+
+.habits a {
+  text-decoration: none;
+}
+
+/* #endregion */
+
+/* #region Habit */
+
+.active {
+  background-color: coral;
+}
+
+.habit {
+  display: flex;
+  justify-content: center;
+}
+
+.habit-container {
+  margin-top: 4vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.habit-content {
+  margin-top: 7vh;
+  display: flex;
+  gap: 10vw;
+  justify-content: center;
+}
+
+.habit-left > div:nth-of-type(1) {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+
+.habit-left img {
+  height: 150px;
+}
+
+.habit input {
+  border: none;
+  font-size: 2.5rem;
+}
+
+.habit input:focus {
+  outline: none;
+}
+
+.habit-left > div:nth-of-type(2),
+.habit-left > div:nth-of-type(3) {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.habit-left > div:nth-of-type(3) > div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.time {
+  background-color: rgb(248, 248, 248);
+  padding: 1rem;
+  border-radius: 50%;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.button-container button {
+  height: 18px;
+  width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.habit-right {
+  min-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
 /* #endregion */
