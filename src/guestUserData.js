@@ -10,7 +10,7 @@ const guestUserData = {
       id: "5d5df5d5-2af5-4e32-98a3-423d5e7c359d",
       icon: "https://picsum.photos/250",
       name: "reading",
-      shedule: [1, 2, 3, 4, 5, 6, 7],
+      schedule: [1, 2, 3, 4, 5, 6, 7],
       time: 15,
       completed: [
         1679154955, 1679241355, 1679327755, 1679414155, 1679500555, 1679586955,
@@ -24,7 +24,7 @@ const guestUserData = {
       id: "7dc14aa5-e07b-49df-9e89-7f497e1f69fb",
       icon: "https://picsum.photos/250",
       name: "walk",
-      shedule: [1, 3, 6],
+      schedule: [1, 3, 6],
       time: 20,
       completed: [
         1679155224, 1679328024, 1679500824, 1679760024, 1679932824, 1680105624,
@@ -36,7 +36,7 @@ const guestUserData = {
       id: "f9f1202c-f874-491d-943c-eb74cb8f27e8",
       icon: "https://picsum.photos/250",
       name: "avoid sugar",
-      shedule: [1, 2, 3, 4, 5, 6, 7],
+      schedule: [1, 2, 3, 4, 5, 6, 7],
       time: 0,
       completed: [
         1679155037, 1679241437, 1679327837, 1679414237, 1679500637, 1679587037,
@@ -50,7 +50,7 @@ const guestUserData = {
       id: "af968d56-37fd-4c3a-83dc-64d85c09b8fd",
       icon: "https://picsum.photos/250",
       name: "learn spanish",
-      shedule: [6, 7],
+      schedule: [6, 7],
       time: 60,
       completed: [
         1679155321, 1679241721, 1679760121, 1679846521, 1680364921, 1680451321,

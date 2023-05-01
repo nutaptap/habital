@@ -74,8 +74,8 @@ nav img {
   margin-top: 12vh;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 3rem;
+  justify-content: flex-start;
+  gap: 3rem 6rem;
   max-width: 750px;
 }
 
@@ -179,6 +179,55 @@ nav img {
 }
 
 .habit-right {
+  min-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+/* #endregion */
+
+/* #region Dashboard */
+
+.dashboard .selected {
+  color: white;
+  background-color: rgb(34, 34, 34);
+}
+
+.dashboard {
+  margin-top: 12vh;
+  display: flex;
+  justify-content: center;
+  gap: 10vw;
+}
+
+.dashboard-week {
+  display: flex;
+  gap: 1rem;
+  margin-top: 4rem;
+}
+
+.dashboard p {
+  margin: 0;
+}
+
+.dashboard-week div {
+  border: 0.5px black solid;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+  align-items: center;
+}
+
+.selected {
+  background-color: rgb(31, 31, 31);
+  color: white;
+}
+
+.dashboard-right {
   min-width: 500px;
   display: flex;
   flex-direction: column;

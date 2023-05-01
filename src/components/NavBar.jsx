@@ -3,16 +3,19 @@ import { UserContext } from "../App";
 import { Link } from "react-router-dom";
 
 function NavBar() {
-  const user = useContext(UserContext);
+  const [context, setContext] = useContext(UserContext);
+  const user = context;
 
   return (
     <div className="nav-container">
       <nav>
         <div className="nav-left">
-          <div>
-            <img src="https://picsum.photos/200" />
-            <h4>habital</h4>
-          </div>
+          <Link to="/">
+            <div>
+              <img src="https://picsum.photos/200" />
+              <h4>habital</h4>
+            </div>
+          </Link>
           <ul>
             <li>
               <Link to="/dashboard">Dashboard</Link>

@@ -3,8 +3,6 @@ import { UserContext } from "../App";
 import NavBar from "./NavBar";
 
 function Home() {
-  const user = useContext(UserContext);
-
   return (
     <div className="home">
       <NavBar />

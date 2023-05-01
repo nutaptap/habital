@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
 
 function Habits() {
-  const user = useContext(UserContext);
+  const [context, setContext] = useContext(UserContext);
+  const user = context;
 
   return (
     <>
@@ -21,6 +22,12 @@ function Habits() {
               </Link>
             );
           })}
+          <Link to={`/habit/new`}>
+            <figure>
+              <img alt="Add a new habit" src="https://picsum.photos/250" />
+              <figcaption>New habit</figcaption>
+            </figure>
+          </Link>
         </div>
       </div>
     </>
