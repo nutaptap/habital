@@ -4,22 +4,19 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../App";
 import { LineChart } from "react-chartkick";
 import "chartkick/chart.js";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
 
 function Habit() {
-  const { habitId } = useParams();
-  const [context, setContext] = useContext(UserContext);
-  const user = context;
+  const { habitURL } = useParams();
+  const [userContext, setUserContext] = useContext(UserContext);
   const [habit, setHabit] = useState(null);
-  const [time, setTime] = useState(null);
-  const [name, setName] = useState(null);
-  const [schedule, setSchedule] = useState([]);
   const [chartData, setChartData] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (habitId === "new") {
+    if (habitURL === "new") {
       const uuid = uuidv4();
       const newHabit = {
         id: uuid,
@@ -33,92 +30,105 @@ function Habit() {
       setChartData({ [today]: 0 });
       newHabit.completed = today;
       setHabit(newHabit);
-      setTime(newHabit.time);
-      setName(newHabit.name);
-      setSchedule(newHabit.schedule);
     } else {
-      const habit = user.habits.find((habit) => habit.id === habitId);
-      setHabit(habit);
-      setTime(habit.time);
-      setName(habit.name);
-      setSchedule(habit.schedule);
-      const weeklyData = {};
+      const currentHabit = userContext.habits.find(
+        (habit) => habit.id === habitURL
+      );
+      setHabit(currentHabit);
+    }
+  }, [userContext]);
 
-      if (habit.completed.length === 0) {
-        const today = new Date().toISOString().slice(0, 10);
-        setChartData({ [today]: 0 });
-      } else {
-        habit.completed.forEach((date) => {
-          const d = new Date(date * 1000);
-          const weekStart = new Date(
-            d.getFullYear(),
-            d.getMonth(),
-            d.getDate() - d.getDay() + 1
-          );
-          const key = `${weekStart.getFullYear()}-${
-            weekStart.getMonth() + 1
-          }-${weekStart.getDate()}`;
-          if (key in weeklyData) {
-            weeklyData[key] += 1;
-          } else {
-            weeklyData[key] = 1;
-          }
+  useEffect(() => {
+    if (habit && habitURL !== "new") {
+      const dates = habit.completed
+        .sort((a, b) => a - b)
+        .map((date) => {
+          return new Date(date * 1000);
         });
 
-        setChartData(weeklyData);
+      const weekSet = new Set();
+      const startDate = moment(dates[0]);
+      const currentDate = moment();
+
+      while (startDate.isSameOrBefore(currentDate)) {
+        weekSet.add(startDate.isoWeek());
+        startDate.add(1, "days");
       }
+      const weeks = Array.from(weekSet).reduce((acc, curr) => {
+        acc[curr] = 0;
+        return acc;
+      }, {});
+
+      dates.forEach((date) => {
+        const weekNumber = moment(date).isoWeek();
+        weeks.hasOwnProperty(weekNumber) && weeks[weekNumber]++;
+      });
+
+      const formattedWeeks = {};
+
+      for (const week in weeks) {
+        const value = weeks[week];
+        const monday = moment()
+          .isoWeek(Number(week))
+          .startOf("isoWeek")
+          .format("YYYY-MM-DD");
+        formattedWeeks[monday] = value;
+      }
+
+      setChartData(formattedWeeks);
     }
-  }, [user]);
+  }, [habit]);
 
   function handleName(event) {
-    setName(event.target.value);
+    setHabit({ ...habit, name: event.target.value });
   }
 
   function handleIncrease() {
-    time < 481 && setTime(time + 1);
+    habit.time < 481 && setHabit({ ...habit, time: habit.time + 1 });
   }
 
   function handleDecrease() {
-    time >= 1 && setTime(time - 1);
+    habit.time >= 1 && setHabit({ ...habit, time: habit.time - 1 });
   }
 
   const handleSchedule = (event) => {
     const day = parseInt(event.target.dataset.value);
 
-    if (schedule.indexOf(day) !== -1) {
-      const updatedSchedule = [...schedule];
-      const index = schedule.indexOf(day);
+    if (habit.schedule.indexOf(day) !== -1) {
+      const updatedSchedule = [...habit.schedule];
+      const index = habit.schedule.indexOf(day);
       updatedSchedule.splice([index], 1);
-      setSchedule(updatedSchedule);
+      setHabit({ ...habit, schedule: updatedSchedule });
     } else {
-      const updatedSchedule = [...schedule, day];
-      setSchedule(updatedSchedule);
+      const updatedSchedule = [...habit.schedule, day];
+      setHabit({ ...habit, schedule: updatedSchedule });
     }
   };
 
-  function handleSave(event) {
-    const updatedUser = { ...user };
+  function handleSave() {
+    const updatedUser = { ...userContext };
     const habitIndex = updatedUser.habits.findIndex(
-      (habit) => habit.id === habitId
+      (habit) => habit.id === habitURL
     );
 
     if (habitIndex === -1) {
       const newHabit = {
         id: habit.id,
         icon: habit.icon,
-        name: name,
-        schedule: schedule,
+        name: habit.name,
+        schedule: habit.schedule,
         completed: [],
-        time: time,
+        time: habit.time,
       };
       updatedUser.habits.push(newHabit);
     } else {
-      updatedUser.habits[habitIndex].name = name;
-      updatedUser.habits[habitIndex].time = time;
-      updatedUser.habits[habitIndex].schedule = schedule;
+      updatedUser.habits[habitIndex].name = habit.name;
+      updatedUser.habits[habitIndex].icon = habit.icon;
+      updatedUser.habits[habitIndex].schedule = habit.schedule;
+      updatedUser.habits[habitIndex].time = habit.time;
     }
 
-    setContext(updatedUser);
+    setUserContext(updatedUser);
     navigate(`/habit/${habit.id}`);
   }
 
@@ -127,7 +137,8 @@ function Habit() {
     const buttonElements = [];
     for (let i = 0; i < buttons.length; i++) {
       const buttonValue = i + 1;
-      const isActive = schedule && schedule.find((day) => day === buttonValue);
+      const isActive =
+        habit.schedule && habit.schedule.find((day) => day === buttonValue);
       buttonElements.push(
         <button
           key={buttonValue}
@@ -165,7 +176,7 @@ function Habit() {
               <div>
                 <h3>Time to complete:</h3>
                 <div>
-                  <p className="time">{time}</p>
+                  <p className="time">{habit.time}</p>
                   <div className="button-container">
                     <button type="button" onClick={handleIncrease}>
                       +

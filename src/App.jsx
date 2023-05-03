@@ -24,7 +24,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
-          <Route path="/habit/:habitId" element={<Habit />} />
+          <Route path="/habit/:habitURL" element={<Habit />} />
         </Routes>
       </UserContext.Provider>
     </Router>
