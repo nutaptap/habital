@@ -8,6 +8,7 @@ import moment from "moment";
 function Dashboard() {
   const [userContext, setUserContext] = useContext(UserContext);
   const today = new Date();
+  const [selectedDay, setSelectedDay] = useState(today.getDay());
   const [chartData, setChartData] = useState({});
 
   useEffect(() => {
@@ -25,7 +26,6 @@ function Dashboard() {
       weekSet.add(startDate.isoWeek());
       startDate.add(1, "days");
     }
-    console.log(weekSet);
     const weeks = Array.from(weekSet).reduce((acc, curr) => {
       acc[curr] = 0;
       return acc;
@@ -50,6 +50,37 @@ function Dashboard() {
     setChartData(formattedWeeks);
   }, [userContext]);
 
+  function handleSelect(event) {
+    const selected = Number(event.target.closest("[data-value]").dataset.value);
+    setSelectedDay(selected);
+    console.log(selected);
+  }
+
+  function renderButtons() {
+    const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
+    const mondayDate = Number(moment(today).startOf("isoWeek").format("DD"));
+    const buttonElements = [];
+    for (let i = 0; i < weekDays.length; i++) {
+      const buttonValue =
+        mondayDate + i < 10 ? `0${mondayDate + i}` : `${mondayDate + i}`;
+      const isSelected = selectedDay === Number(buttonValue);
+      buttonElements.push(
+        <button
+          key={buttonValue}
+          data-value={buttonValue}
+          className={isSelected ? "selected" : ""}
+          onClick={handleSelect}
+        >
+          <div>{buttonValue}</div>
+          <div>{weekDays[i]}</div>
+        </button>
+      );
+    }
+    return buttonElements;
+  }
+
+  useEffect(() => {}, [selectedDay]);
+
   return (
     <>
       <NavBar />
@@ -61,8 +92,8 @@ function Dashboard() {
               day: "numeric",
             })}
           </h2>
-          <div className="dashboard-week">buttons</div>
-          <div>View</div>
+          <div className="dashboard-week">{renderButtons()}</div>
+          <div></div>
         </div>
         <div className="dashboard-right">
           <LineChart data={chartData} />
