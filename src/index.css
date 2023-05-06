@@ -227,6 +227,18 @@ nav img {
   color: white;
 }
 
+.dashboard-view {
+  margin-top: 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.habit-check {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .dashboard-right {
   min-width: 500px;
   display: flex;

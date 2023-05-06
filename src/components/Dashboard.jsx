@@ -53,7 +53,6 @@ function Dashboard() {
   function handleSelect(event) {
     const selected = Number(event.target.closest("[data-value]").dataset.value);
     setSelectedDay(selected);
-    console.log(selected);
   }
 
   function renderButtons() {
@@ -79,7 +78,20 @@ function Dashboard() {
     return buttonElements;
   }
 
-  useEffect(() => {}, [selectedDay]);
+  function renderView() {
+    const habits = userContext.habits.filter((habit) =>
+      habit.schedule.includes(selectedDay)
+    );
+    const habitsList = habits.map((habit) => {
+      return (
+        <div className="habit-check" key={habit.name}>
+          <input type="checkbox" id={habit.name} name={habit.name}></input>
+          <label for={habit.name}>{habit.name}</label>
+        </div>
+      );
+    });
+    return habitsList;
+  }
 
   return (
     <>
@@ -93,7 +105,7 @@ function Dashboard() {
             })}
           </h2>
           <div className="dashboard-week">{renderButtons()}</div>
-          <div></div>
+          <div className="dashboard-view">{renderView()}</div>
         </div>
         <div className="dashboard-right">
           <LineChart data={chartData} />
