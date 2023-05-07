@@ -239,6 +239,10 @@ nav img {
   gap: 0.5rem;
 }
 
+.disabled {
+  color: rgb(85, 85, 85);
+}
+
 .dashboard-right {
   min-width: 500px;
   display: flex;

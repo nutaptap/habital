@@ -8,11 +8,15 @@ import moment from "moment";
 function Dashboard() {
   const [userContext, setUserContext] = useContext(UserContext);
   const today = new Date();
-  const [selectedDay, setSelectedDay] = useState(today.getDay());
+  const [selectedDay, setSelectedDay] = useState(moment(today).isoWeekday());
   const [chartData, setChartData] = useState({});
 
   useEffect(() => {
-    const dates = userContext.stats.completed
+    let dates = [];
+    userContext.habits.forEach((habit) => {
+      dates = dates.concat(habit.completed);
+    });
+    dates = dates
       .sort((a, b) => a - b)
       .map((date) => {
         return new Date(date * 1000);
@@ -78,15 +82,60 @@ function Dashboard() {
     return buttonElements;
   }
 
+  function handleCheckbox(event) {
+    const updatedUser = { ...userContext };
+    const habit = userContext.habits.filter(
+      (element) => element.id === event.target.id
+    );
+    const habitIndex = userContext.habits.findIndex(
+      (element) => element.id === event.target.id
+    );
+    const completed = habit[0].completed;
+    const lastCompleted = moment(
+      new Date(completed[completed.length - 1] * 1000)
+    ).format("YYYY-MM-DD");
+    const isCompletedToday = lastCompleted === moment().format("YYYY-MM-DD");
+    if (isCompletedToday) {
+      console.log("option 1");
+      updatedUser.habits[habitIndex] = {
+        ...habit[0],
+        completed: completed.slice(0, completed.length - 1),
+      };
+    } else {
+      console.log("option 2");
+      updatedUser.habits[habitIndex] = {
+        ...habit[0],
+        completed: [...completed, Math.floor(new Date() / 1000)],
+      };
+    }
+    setUserContext(updatedUser);
+    console.log(userContext.habits[habitIndex]);
+  }
+
   function renderView() {
+    const isCurrentDay = selectedDay === moment(today).isoWeekday();
     const habits = userContext.habits.filter((habit) =>
       habit.schedule.includes(selectedDay)
     );
+    const selectedFullDay = moment()
+      .isoWeekday(selectedDay)
+      .format("YYYY-MM-DD");
     const habitsList = habits.map((habit) => {
       return (
         <div className="habit-check" key={habit.name}>
-          <input type="checkbox" id={habit.name} name={habit.name}></input>
-          <label for={habit.name}>{habit.name}</label>
+          <input
+            type="checkbox"
+            checked={habit.completed
+              .map((date) => moment(new Date(date * 1000)).format("YYYY-MM-DD"))
+              .includes(selectedFullDay)}
+            disabled={isCurrentDay ? false : true}
+            id={habit.id}
+            name={habit.id}
+            onClick={handleCheckbox}
+          ></input>
+          <label htmlFor={habit.id} className={isCurrentDay ? "" : "disabled"}>
+            {habit.name}
+          </label>
         </div>
       );
     });
