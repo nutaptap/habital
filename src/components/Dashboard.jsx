@@ -8,8 +8,11 @@ import moment from "moment";
 function Dashboard() {
   const [userContext, setUserContext] = useContext(UserContext);
   const today = new Date();
-  const [selectedDay, setSelectedDay] = useState(moment(today).isoWeekday());
+  const [selectedDay, setSelectedDay] = useState(
+    Number(moment(today).format("DD"))
+  );
   const [chartData, setChartData] = useState({});
+  const [currentStreak, setCurrentStreak] = useState(0);
 
   useEffect(() => {
     let dates = [];
@@ -21,14 +24,13 @@ function Dashboard() {
       .map((date) => {
         return new Date(date * 1000);
       });
-
     const weekSet = new Set();
-    const startDate = moment(dates[0]);
+    const iDate = moment(dates[0]);
     const currentDate = moment();
 
-    while (startDate.isSameOrBefore(currentDate)) {
-      weekSet.add(startDate.isoWeek());
-      startDate.add(1, "days");
+    while (iDate.isSameOrBefore(currentDate.endOf("day"))) {
+      weekSet.add(iDate.isoWeek());
+      iDate.add(1, "days");
     }
     const weeks = Array.from(weekSet).reduce((acc, curr) => {
       acc[curr] = 0;
@@ -52,6 +54,21 @@ function Dashboard() {
     }
 
     setChartData(formattedWeeks);
+    setCurrentStreak(0);
+
+    let streak = 0;
+    let lastDate = null;
+
+    for (let i = dates.length - 1; i >= 0; i--) {
+      if (moment().diff(moment(dates[i]), "days") > 1) {
+        break;
+      } else if (lastDate !== moment(dates[i]).format("YYYY-MM-DD")) {
+        lastDate = moment(dates[i]).format("YYYY-MM-DD");
+        streak++;
+      }
+    }
+
+    setCurrentStreak(streak);
   }, [userContext]);
 
   function handleSelect(event) {
@@ -96,29 +113,27 @@ function Dashboard() {
     ).format("YYYY-MM-DD");
     const isCompletedToday = lastCompleted === moment().format("YYYY-MM-DD");
     if (isCompletedToday) {
-      console.log("option 1");
       updatedUser.habits[habitIndex] = {
         ...habit[0],
         completed: completed.slice(0, completed.length - 1),
       };
     } else {
-      console.log("option 2");
       updatedUser.habits[habitIndex] = {
         ...habit[0],
         completed: [...completed, Math.floor(new Date() / 1000)],
       };
     }
     setUserContext(updatedUser);
-    console.log(userContext.habits[habitIndex]);
   }
 
   function renderView() {
-    const isCurrentDay = selectedDay === moment(today).isoWeekday();
+    const selectedWeekDay = moment(today).date(selectedDay).isoWeekday();
+    const isCurrentDay = selectedDay === Number(moment(today).format("DD"));
     const habits = userContext.habits.filter((habit) =>
-      habit.schedule.includes(selectedDay)
+      habit.schedule.includes(selectedWeekDay)
     );
-    const selectedFullDay = moment()
-      .isoWeekday(selectedDay)
+    const selectedFullDay = moment(today)
+      .date(selectedDay)
       .format("YYYY-MM-DD");
     const habitsList = habits.map((habit) => {
       return (
@@ -131,7 +146,7 @@ function Dashboard() {
             disabled={isCurrentDay ? false : true}
             id={habit.id}
             name={habit.id}
-            onClick={handleCheckbox}
+            onChange={handleCheckbox}
           ></input>
           <label htmlFor={habit.id} className={isCurrentDay ? "" : "disabled"}>
             {habit.name}
@@ -145,6 +160,7 @@ function Dashboard() {
   return (
     <>
       <NavBar />
+      <p>{currentStreak}</p>
       <div className="dashboard">
         <div className="dashboard-left">
           <h2>
