@@ -13,6 +13,7 @@ function Dashboard() {
   );
   const [chartData, setChartData] = useState({});
   const [currentStreak, setCurrentStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
 
   useEffect(() => {
     let dates = [];
@@ -54,13 +55,15 @@ function Dashboard() {
     }
 
     setChartData(formattedWeeks);
+
+    setBestStreak(userContext.stats.best);
     setCurrentStreak(0);
 
     let streak = 0;
     let lastDate = null;
 
     for (let i = dates.length - 1; i >= 0; i--) {
-      if (moment().diff(moment(dates[i]), "days") > 1) {
+      if (moment().diff(moment(dates[i]), "days") >= 1) {
         break;
       } else if (lastDate !== moment(dates[i]).format("YYYY-MM-DD")) {
         lastDate = moment(dates[i]).format("YYYY-MM-DD");
@@ -69,6 +72,9 @@ function Dashboard() {
     }
 
     setCurrentStreak(streak);
+    if (streak > bestStreak) {
+      setBestStreak(streak);
+    }
   }, [userContext]);
 
   function handleSelect(event) {
@@ -160,7 +166,6 @@ function Dashboard() {
   return (
     <>
       <NavBar />
-      <p>{currentStreak}</p>
       <div className="dashboard">
         <div className="dashboard-left">
           <h2>
@@ -173,6 +178,16 @@ function Dashboard() {
           <div className="dashboard-view">{renderView()}</div>
         </div>
         <div className="dashboard-right">
+          <div className="streak-counters">
+            <div>
+              <p>{currentStreak}</p>
+              <p>Current</p>
+            </div>
+            <div>
+              <p>{bestStreak}</p>
+              <p>Best</p>
+            </div>
+          </div>
           <LineChart data={chartData} />
         </div>
       </div>
