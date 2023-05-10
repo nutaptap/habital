@@ -14,6 +14,8 @@ function Habit() {
   const [habit, setHabit] = useState(null);
   const [chartData, setChartData] = useState({});
   const navigate = useNavigate();
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
 
   useEffect(() => {
     if (habitURL === "new") {
@@ -77,7 +79,33 @@ function Habit() {
 
       setChartData(formattedWeeks);
     }
-  }, [habit]);
+
+    if (habit) {
+      setCurrentStreak(0);
+      setBestStreak(habit.best);
+
+      const dates = habit.completed.sort((a, b) => a - b);
+      console.log(dates);
+      let streak = 0;
+      let lastDate = null;
+
+      for (let i = dates.length - 1; i >= 0; i--) {
+        if (moment().diff(moment(new Date(dates[i] * 1000)), "days") >= 1) {
+          break;
+        } else if (lastDate !== moment(dates[i]).format("YYYY-MM-DD")) {
+          lastDate = moment(new Date(dates[i] * 1000)).format("YYYY-MM-DD");
+          streak++;
+        }
+      }
+
+      setCurrentStreak(streak);
+
+      setCurrentStreak(streak);
+      if (streak > bestStreak) {
+        setBestStreak(streak);
+      }
+    }
+  }, [habit, userContext]);
 
   function handleName(event) {
     setHabit({ ...habit, name: event.target.value });
@@ -188,12 +216,22 @@ function Habit() {
                   <p>minutes</p>
                 </div>
               </div>
-            </div>
-            <div className="habit-right">
-              <LineChart data={chartData} />
               <button type="button" onClick={handleSave}>
                 Save changes
               </button>
+            </div>
+            <div className="habit-right">
+              <div className="streak-counters">
+                <div>
+                  <p>{currentStreak}</p>
+                  <p>Current</p>
+                </div>
+                <div>
+                  <p>{bestStreak}</p>
+                  <p>Best</p>
+                </div>
+              </div>
+              <LineChart data={chartData} />
             </div>
           </div>
         </div>
