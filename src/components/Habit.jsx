@@ -1,46 +1,54 @@
 import { v4 as uuidv4 } from "uuid";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
-import { UserContext } from "../App";
+import moment from "moment";
 import { LineChart } from "react-chartkick";
 import "chartkick/chart.js";
-import moment from "moment";
-import { useNavigate } from "react-router-dom";
+
+import { UserContext } from "../App";
 import NavBar from "./NavBar";
 
 function Habit() {
-  const { habitURL } = useParams();
-  const [userContext, setUserContext] = useContext(UserContext);
   const [habit, setHabit] = useState(null);
   const [chartData, setChartData] = useState({});
-  const navigate = useNavigate();
   const [currentStreak, setCurrentStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
+  const [userContext, setUserContext] = useContext(UserContext);
+  const { habitURL } = useParams();
+  const navigate = useNavigate();
+
+  function createNewHabit() {
+    const uuid = uuidv4();
+    const newHabit = {
+      id: uuid,
+      icon: "https://picsum.photos/250",
+      name: "New habit",
+      time: 0,
+      schedule: [],
+      completed: [],
+    };
+    const today = new Date().toISOString().slice(0, 10);
+    setChartData({ [today]: 0 });
+    newHabit.completed = today;
+    setHabit(newHabit);
+  }
+
+  function setCurrentHabit() {
+    const currentHabit = userContext.habits.find(
+      (element) => element.id === habitURL
+    );
+    setHabit(currentHabit);
+  }
 
   useEffect(() => {
     if (habitURL === "new") {
-      const uuid = uuidv4();
-      const newHabit = {
-        id: uuid,
-        icon: "https://picsum.photos/250",
-        name: "New habit",
-        time: 0,
-        schedule: [],
-        completed: [],
-      };
-      const today = new Date().toISOString().slice(0, 10);
-      setChartData({ [today]: 0 });
-      newHabit.completed = today;
-      setHabit(newHabit);
+      createNewHabit();
     } else {
-      const currentHabit = userContext.habits.find(
-        (habit) => habit.id === habitURL
-      );
-      setHabit(currentHabit);
+      setCurrentHabit();
     }
   }, [userContext]);
 
-  useEffect(() => {
+  function createChart() {
     if (habit && habitURL !== "new") {
       const dates = habit.completed
         .sort((a, b) => a - b)
@@ -79,13 +87,14 @@ function Habit() {
 
       setChartData(formattedWeeks);
     }
+  }
 
+  function createStreakCounters() {
     if (habit) {
       setCurrentStreak(0);
       setBestStreak(habit.best);
 
       const dates = habit.completed.sort((a, b) => a - b);
-      console.log(dates);
       let streak = 0;
       let lastDate = null;
 
@@ -100,12 +109,16 @@ function Habit() {
 
       setCurrentStreak(streak);
 
-      setCurrentStreak(streak);
       if (streak > bestStreak) {
         setBestStreak(streak);
       }
     }
-  }, [habit, userContext]);
+  }
+
+  useEffect(() => {
+    createChart();
+    createStreakCounters();
+  }, [habit]);
 
   function handleName(event) {
     setHabit({ ...habit, name: event.target.value });
@@ -119,7 +132,7 @@ function Habit() {
     habit.time >= 1 && setHabit({ ...habit, time: habit.time - 1 });
   }
 
-  const handleSchedule = (event) => {
+  const handleSetSchedule = (event) => {
     const day = parseInt(event.target.dataset.value);
 
     if (habit.schedule.indexOf(day) !== -1) {
@@ -173,7 +186,7 @@ function Habit() {
           type="button"
           data-value={buttonValue}
           className={isActive ? "active" : ""}
-          onClick={handleSchedule}
+          onClick={handleSetSchedule}
         >
           {buttons[i]}
         </button>

@@ -1,21 +1,20 @@
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../App";
-import NavBar from "./NavBar";
 import { LineChart } from "react-chartkick";
 import "chartkick/chart.js";
 import moment from "moment";
 
+import { UserContext } from "../App";
+import NavBar from "./NavBar";
+
 function Dashboard() {
+  const today = moment();
   const [userContext, setUserContext] = useContext(UserContext);
-  const today = new Date();
-  const [selectedDay, setSelectedDay] = useState(
-    Number(moment(today).format("DD"))
-  );
+  const [selectedDay, setSelectedDay] = useState(Number(today.format("DD")));
   const [chartData, setChartData] = useState({});
   const [currentStreak, setCurrentStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
 
-  useEffect(() => {
+  function getSortedDates() {
     let dates = [];
     userContext.habits.forEach((habit) => {
       dates = dates.concat(habit.completed);
@@ -25,11 +24,14 @@ function Dashboard() {
       .map((date) => {
         return new Date(date * 1000);
       });
+    return dates;
+  }
+
+  function createChart(dates) {
     const weekSet = new Set();
     const iDate = moment(dates[0]);
-    const currentDate = moment();
 
-    while (iDate.isSameOrBefore(currentDate.endOf("day"))) {
+    while (iDate.isSameOrBefore(today.endOf("day"))) {
       weekSet.add(iDate.isoWeek());
       iDate.add(1, "days");
     }
@@ -55,7 +57,9 @@ function Dashboard() {
     }
 
     setChartData(formattedWeeks);
+  }
 
+  function createStreakCounters(dates) {
     setBestStreak(userContext.stats.best);
     setCurrentStreak(0);
 
@@ -75,6 +79,13 @@ function Dashboard() {
     if (streak > bestStreak) {
       setBestStreak(streak);
     }
+  }
+
+  useEffect(() => {
+    const dates = getSortedDates();
+
+    createChart(dates);
+    createStreakCounters(dates);
   }, [userContext]);
 
   function handleSelect(event) {
@@ -84,7 +95,7 @@ function Dashboard() {
 
   function renderButtons() {
     const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
-    const mondayDate = Number(moment(today).startOf("isoWeek").format("DD"));
+    const mondayDate = Number(today.startOf("isoWeek").format("DD"));
     const buttonElements = [];
     for (let i = 0; i < weekDays.length; i++) {
       const buttonValue =
@@ -133,14 +144,12 @@ function Dashboard() {
   }
 
   function renderView() {
-    const selectedWeekDay = moment(today).date(selectedDay).isoWeekday();
-    const isCurrentDay = selectedDay === Number(moment(today).format("DD"));
+    const selectedWeekDay = today.date(selectedDay).isoWeekday();
+    const isCurrentDay = selectedDay === Number(today.format("DD"));
     const habits = userContext.habits.filter((habit) =>
       habit.schedule.includes(selectedWeekDay)
     );
-    const selectedFullDay = moment(today)
-      .date(selectedDay)
-      .format("YYYY-MM-DD");
+    const selectedFullDay = today.date(selectedDay).format("YYYY-MM-DD");
     const habitsList = habits.map((habit) => {
       return (
         <div className="habit-check" key={habit.name}>
@@ -168,12 +177,7 @@ function Dashboard() {
       <NavBar />
       <div className="dashboard">
         <div className="dashboard-left">
-          <h2>
-            {today.toLocaleString("en-US", {
-              month: "long",
-              day: "numeric",
-            })}
-          </h2>
+          <h2>{today.format("MMMM Do")}</h2>
           <div className="dashboard-week">{renderButtons()}</div>
           <div className="dashboard-view">{renderView()}</div>
         </div>
