@@ -1,10 +1,31 @@
-import { useContext } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { UserContext } from "../App";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function NavBar() {
-  const [context, setContext] = useContext(UserContext);
-  const user = context;
+  const [usercontext, setUserContext] = useContext(UserContext);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && menuRef.current.contains(event.target) === false) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function handleUser() {
+    setShowMenu(true);
+  }
+
+  function handleLogout() {
+    setUserContext(undefined);
+    setShowMenu(false);
+    navigate("/home");
+  }
 
   return (
     <div className="nav-container">
@@ -18,24 +39,33 @@ function NavBar() {
           </Link>
           <ul>
             <li>
-              <Link to="/dashboard">Dashboard</Link>
+              {usercontext !== undefined && (
+                <Link to="/dashboard">Dashboard</Link>
+              )}
+              {usercontext === undefined && <Link to="/login">Dashboard</Link>}
             </li>
             <li>
-              <Link to="/habits">Habits</Link>
+              {usercontext !== undefined && <Link to="/habits">Habits</Link>}
+              {usercontext === undefined && <Link to="/login">Habts</Link>}
             </li>
           </ul>
         </div>
-        {user.user.name === undefined && (
+        {usercontext === undefined && (
           <div className="nav-right">
             <Link to="/login">Login</Link>
             <div className="nav-divider" />
             <Link to="/signup">Sign up</Link>
           </div>
         )}
-        {user.user.name !== undefined && (
+        {usercontext !== undefined && (
           <div className="nav-right">
-            <img src={user.user.picture} />
-            <a>{user.user.name}</a>
+            <img src={usercontext.user.picture} />
+            <button onClick={handleUser}>{usercontext.user.name}</button>
+            {showMenu && (
+              <div className="menu" ref={menuRef}>
+                <button onClick={handleLogout}>Log out</button>
+              </div>
+            )}
           </div>
         )}
       </nav>

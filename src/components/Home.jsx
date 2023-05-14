@@ -1,8 +1,11 @@
 import { useContext } from "react";
 import { UserContext } from "../App";
+import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
 
 function Home() {
+  const [usercontext, setUserContext] = useContext(UserContext);
+
   return (
     <div className="home">
       <NavBar />
@@ -15,7 +18,12 @@ function Home() {
             Take control of your habits with Habital, the habit tracker app that
             empowers you to create new habits and break bad ones.
           </p>
-          <button type="button">Get started</button>
+          <button type="button">
+            {usercontext === undefined && <Link to="/signup">Get started</Link>}
+            {usercontext !== undefined && (
+              <Link to="/dashboard">Get started</Link>
+            )}
+          </button>
         </div>
         <img src="https://picsum.photos/400" />
       </div>

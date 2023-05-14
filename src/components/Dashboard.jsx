@@ -145,7 +145,7 @@ function Dashboard() {
 
   function renderView() {
     const selectedWeekDay = today.date(selectedDay).isoWeekday();
-    const isCurrentDay = selectedDay === Number(today.format("DD"));
+    const isCurrentDay = selectedDay === Number(moment().format("DD"));
     const habits = userContext.habits.filter((habit) =>
       habit.schedule.includes(selectedWeekDay)
     );
@@ -158,7 +158,7 @@ function Dashboard() {
             checked={habit.completed
               .map((date) => moment(new Date(date * 1000)).format("YYYY-MM-DD"))
               .includes(selectedFullDay)}
-            disabled={isCurrentDay ? false : true}
+            disabled={!isCurrentDay}
             id={habit.id}
             name={habit.id}
             onChange={handleCheckbox}
