@@ -1,9 +1,9 @@
 const guestUserData = {
+  email: "guest@guest.com",
   user: {
     id: 1,
     name: "Guest User",
     picture: "https://picsum.photos/200",
-    email: "guest@email.com",
   },
   habits: [
     {

@@ -1,6 +1,8 @@
 import { useContext, useRef, useState, useEffect } from "react";
 import { UserContext } from "../App";
 import { Link, useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase-config";
 
 function NavBar() {
   const [usercontext, setUserContext] = useContext(UserContext);
@@ -21,11 +23,12 @@ function NavBar() {
     setShowMenu(true);
   }
 
-  function handleLogout() {
-    setUserContext(undefined);
+  const handleLogout = async () => {
+    setUserContext(null);
     setShowMenu(false);
+    await signOut(auth);
     navigate("/home");
-  }
+  };
 
   return (
     <div className="nav-container">
@@ -50,17 +53,17 @@ function NavBar() {
             </li>
           </ul>
         </div>
-        {usercontext === undefined && (
+        {usercontext === null && (
           <div className="nav-right">
             <Link to="/login">Login</Link>
             <div className="nav-divider" />
             <Link to="/signup">Sign up</Link>
           </div>
         )}
-        {usercontext !== undefined && (
+        {usercontext !== null && (
           <div className="nav-right">
-            <img src={usercontext.user.picture} />
-            <button onClick={handleUser}>{usercontext.user.name}</button>
+            <img src={usercontext?.user.picture} referrerPolicy="no-referrer" />
+            <button onClick={handleUser}>{usercontext?.user.name}</button>
             {showMenu && (
               <div className="menu" ref={menuRef}>
                 <button onClick={handleLogout}>Log out</button>

@@ -1,10 +1,14 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
 
 function Home() {
   const [usercontext, setUserContext] = useContext(UserContext);
+
+  const handleCreateUser = async () => {
+    await addDoc(usersCollectionRef, { name: newName });
+  };
 
   return (
     <div className="home">
