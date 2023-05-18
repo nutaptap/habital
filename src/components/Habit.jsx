@@ -36,6 +36,8 @@ function Habit() {
   const { habitURL } = useParams();
   const navigate = useNavigate();
   const usersCollectionRef = collection(db, "users");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("fries");
 
   function createNewHabit() {
     const uuid = uuidv4();
@@ -175,7 +177,7 @@ function Habit() {
     if (habitIndex === -1) {
       const newHabit = {
         id: habit.id,
-        icon: habit.icon,
+        icon: selectedImage,
         name: habit.name,
         schedule: habit.schedule,
         completed: [],
@@ -184,7 +186,7 @@ function Habit() {
       updatedUser.habits.push(newHabit);
     } else {
       updatedUser.habits[habitIndex].name = habit.name;
-      updatedUser.habits[habitIndex].icon = habit.icon;
+      updatedUser.habits[habitIndex].icon = selectedImage;
       updatedUser.habits[habitIndex].schedule = habit.schedule;
       updatedUser.habits[habitIndex].time = habit.time;
     }
@@ -259,6 +261,14 @@ function Habit() {
     navigate("/habits");
   }
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   if (!habit) {
     return <div></div>;
   }
@@ -272,7 +282,11 @@ function Habit() {
           <div className="habit-content">
             <div className="habit-left">
               <div>
-                <img alt={habit.name} src={iconImages[habit.icon]} />
+                <img
+                  alt={habit.name}
+                  src={iconImages[selectedImage]}
+                  onClick={openModal}
+                />
               </div>
               <div>
                 <h3>Repeats every:</h3>
@@ -315,6 +329,25 @@ function Habit() {
             </div>
           </div>
         </div>
+        {isModalOpen && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <div className="image-options">
+                {Object.keys(iconImages).map((key) => (
+                  <img
+                    key={key}
+                    alt={key}
+                    src={iconImages[key]}
+                    onClick={() => {
+                      setSelectedImage(key);
+                      closeModal();
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

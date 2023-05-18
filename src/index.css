@@ -186,6 +186,38 @@ nav img {
   gap: 2rem;
 }
 
+/*Habit Modal*/
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 3px;
+}
+
+.image-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.image-options img {
+  width: 150px;
+  height: 150px;
+  cursor: pointer;
+}
+
 /* #endregion */
 
 /* #region Dashboard */
