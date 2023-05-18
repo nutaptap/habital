@@ -24,10 +24,10 @@ function NavBar() {
   }
 
   const handleLogout = async () => {
+    navigate("/home");
     setUserContext(null);
     setShowMenu(false);
     await signOut(auth);
-    navigate("/home");
   };
 
   return (
@@ -62,8 +62,15 @@ function NavBar() {
         )}
         {usercontext !== null && (
           <div className="nav-right">
-            <img src={usercontext?.user.picture} referrerPolicy="no-referrer" />
-            <button onClick={handleUser}>{usercontext?.user.name}</button>
+            {usercontext.user && usercontext.user.picture && (
+              <img
+                src={usercontext.user.picture}
+                referrerPolicy="no-referrer"
+              />
+            )}
+            {usercontext.user && usercontext.user.picture && (
+              <button onClick={handleUser}>{usercontext?.user.name}</button>
+            )}
             {showMenu && (
               <div className="menu" ref={menuRef}>
                 <button onClick={handleLogout}>Log out</button>

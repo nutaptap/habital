@@ -1,14 +1,14 @@
 const guestUserData = {
-  email: "guest@guest.com",
   user: {
     id: 1,
+    email: "guest@guest.com",
     name: "Guest User",
     picture: "https://picsum.photos/200",
   },
   habits: [
     {
       id: "5d5df5d5-2af5-4e32-98a3-423d5e7c359d",
-      icon: "https://picsum.photos/250",
+      icon: "fries",
       name: "reading",
       schedule: [1, 2, 3, 4, 5, 6, 7],
       time: 15,
@@ -23,7 +23,7 @@ const guestUserData = {
     },
     {
       id: "7dc14aa5-e07b-49df-9e89-7f497e1f69fb",
-      icon: "https://picsum.photos/250",
+      icon: "boo",
       name: "walk",
       schedule: [1, 3, 6],
       time: 20,
@@ -36,7 +36,7 @@ const guestUserData = {
     },
     {
       id: "f9f1202c-f874-491d-943c-eb74cb8f27e8",
-      icon: "https://picsum.photos/250",
+      icon: "hair",
       name: "avoid sugar",
       schedule: [1, 2, 3, 4, 5, 6, 7],
       time: 0,
@@ -51,7 +51,7 @@ const guestUserData = {
     },
     {
       id: "af968d56-37fd-4c3a-83dc-64d85c09b8fd",
-      icon: "https://picsum.photos/250",
+      icon: "sheep",
       name: "learn spanish",
       schedule: [6, 7],
       time: 60,

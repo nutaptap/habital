@@ -5,6 +5,8 @@ import moment from "moment";
 
 import { UserContext } from "../App";
 import NavBar from "./NavBar";
+import { db } from "../firebase-config";
+import { collection, query, where, getDocs, setDoc } from "firebase/firestore";
 
 function Dashboard() {
   const today = moment();
@@ -13,6 +15,7 @@ function Dashboard() {
   const [chartData, setChartData] = useState({});
   const [currentStreak, setCurrentStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
+  const usersCollectionRef = collection(db, "users");
 
   function getSortedDates() {
     let dates = [];
@@ -141,6 +144,22 @@ function Dashboard() {
       };
     }
     setUserContext(updatedUser);
+
+    if (updatedUser.user.id === 1) {
+      return;
+    }
+
+    async function updateUserData() {
+      const querySnapshot = await getDocs(
+        query(usersCollectionRef, where("user.id", "==", updatedUser.user.id))
+      );
+      if (!querySnapshot.empty) {
+        const userDocRef = querySnapshot.docs[0].ref;
+        await setDoc(userDocRef, updatedUser);
+      }
+    }
+
+    updateUserData();
   }
 
   function renderView() {

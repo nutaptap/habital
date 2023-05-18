@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../App";
 import guestUserData from "../guestUserData";
 import newUserData from "../newUserData";
@@ -10,14 +10,20 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase-config";
 import { db } from "../firebase-config";
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  getDoc,
+} from "firebase/firestore";
 
 function SignUp() {
   const [userContext, setUserContext] = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
   const usersCollectionRef = collection(db, "users");
 
   function handleGuestUser() {
@@ -80,7 +86,11 @@ function SignUp() {
         setUserContext(userDoc);
       } else {
         await addDoc(usersCollectionRef, { ...newUserData, user: newUser });
-        setUserContext(newUser);
+        const newDoc = await getDocs(
+          query(usersCollectionRef, where("user.id", "==", newUser.id))
+        );
+        const userDoc = newDoc.docs[0].data();
+        setUserContext(userDoc);
       }
     } catch (error) {
       console.log(error.message);

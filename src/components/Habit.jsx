@@ -4,9 +4,28 @@ import { useState, useContext, useEffect } from "react";
 import moment from "moment";
 import { LineChart } from "react-chartkick";
 import "chartkick/chart.js";
-
 import { UserContext } from "../App";
 import NavBar from "./NavBar";
+import { db } from "../firebase-config";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import boo from "../icons/boo.avif";
+import fries from "../icons/fries.avif";
+import hair from "../icons/hair.avif";
+import sheep from "../icons/sheep.avif";
+
+const iconImages = {
+  boo,
+  fries,
+  hair,
+  sheep,
+};
 
 function Habit() {
   const [habit, setHabit] = useState(null);
@@ -16,12 +35,13 @@ function Habit() {
   const [userContext, setUserContext] = useContext(UserContext);
   const { habitURL } = useParams();
   const navigate = useNavigate();
+  const usersCollectionRef = collection(db, "users");
 
   function createNewHabit() {
     const uuid = uuidv4();
     const newHabit = {
       id: uuid,
-      icon: "https://picsum.photos/250",
+      icon: "fries",
       name: "New habit",
       time: 0,
       schedule: [],
@@ -90,9 +110,9 @@ function Habit() {
   }
 
   function createStreakCounters() {
-    if (habit) {
+    if (habit && Array.isArray(habit.completed)) {
       setCurrentStreak(0);
-      setBestStreak(habit.best);
+      setBestStreak(habit.best ? habit.best : 0);
 
       const dates = habit.completed.sort((a, b) => a - b);
       let streak = 0;
@@ -170,6 +190,24 @@ function Habit() {
     }
 
     setUserContext(updatedUser);
+
+    if (updatedUser.user.id === 1) {
+      navigate(`/habit/${habit.id}`);
+      return;
+    }
+
+    async function updateUserData() {
+      const querySnapshot = await getDocs(
+        query(usersCollectionRef, where("user.id", "==", updatedUser.user.id))
+      );
+      if (!querySnapshot.empty) {
+        const userDocRef = querySnapshot.docs[0].ref;
+        await setDoc(userDocRef, updatedUser);
+      }
+    }
+
+    updateUserData();
+
     navigate(`/habit/${habit.id}`);
   }
 
@@ -195,6 +233,32 @@ function Habit() {
     return buttonElements;
   }
 
+  function handleRemove() {
+    const updatedUser = { ...userContext };
+    const habitIndex = updatedUser.habits.findIndex(
+      (habit) => habit.id === habitURL
+    );
+
+    if (habitIndex !== -1) {
+      updatedUser.habits.splice(habitIndex, 1);
+      setUserContext(updatedUser);
+    }
+
+    async function deleteHabitFromDatabase() {
+      const querySnapshot = await getDocs(
+        query(usersCollectionRef, where("user.id", "==", updatedUser.user.id))
+      );
+      if (!querySnapshot.empty) {
+        const userDocRef = querySnapshot.docs[0].ref;
+        await deleteDoc(collection(userDocRef, "habits", habitURL));
+      }
+    }
+
+    deleteHabitFromDatabase();
+
+    navigate("/habits");
+  }
+
   if (!habit) {
     return <div></div>;
   }
@@ -208,7 +272,7 @@ function Habit() {
           <div className="habit-content">
             <div className="habit-left">
               <div>
-                <img alt={habit.name} src={habit.icon} />
+                <img alt={habit.name} src={iconImages[habit.icon]} />
               </div>
               <div>
                 <h3>Repeats every:</h3>
@@ -245,6 +309,9 @@ function Habit() {
                 </div>
               </div>
               <LineChart data={chartData} />
+              <button type="button" onClick={handleRemove}>
+                Remove habit
+              </button>
             </div>
           </div>
         </div>
